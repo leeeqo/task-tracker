@@ -1,9 +1,8 @@
 package com.leeeqo.config
 
-import com.leeeqo.filter.JwtAuthFilter
-import com.leeeqo.filter.JwtAuthorizationFilter
+import com.leeeqo.filter.JwtAuthenticationFilter
 import com.leeeqo.repository.UserRepository
-import com.leeeqo.service.JwtUserDetailsService
+import com.leeeqo.service.UserDetailsService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -12,7 +11,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.DefaultSecurityFilterChain
@@ -23,7 +21,7 @@ class SecurityConfig {
 
     @Bean
     fun userDetailsService(userRepository: UserRepository): UserDetailsService =
-        JwtUserDetailsService(userRepository)
+        UserDetailsService(userRepository)
 
     @Bean
     fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager =
@@ -40,38 +38,25 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        //jwtAuthenticationFilter: JwtAuthorizationFilter,
-        jwtAuthFilter: JwtAuthFilter,
+        jwtAuthenticationFilter: JwtAuthenticationFilter,
         authenticationProvider: AuthenticationProvider
     ): DefaultSecurityFilterChain {
         http
             .csrf { it.disable() }
             .authorizeHttpRequests { authorize ->
-                    /*.requestMatchers(
-                        "/api/v1/auth",
-                        "/api/v1/auth/register",
-                        "/error")
-                        //"/test")
-                    .permitAll()
-                    .anyRequest()
-                    .fullyAuthenticated()*/
                     authorize.requestMatchers(
                         "/api/v1/auth",
                         "/api/v1/auth/register",
-                        "/api/v1/auth/authenticate")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated()
-                    /*authorize.requestMatchers(
-                        "/api/v1/validate")
-                        .authenticated()*/
+                        "/api/v1/auth/authenticate"
+                    ).permitAll()
+                        .anyRequest().authenticated()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
-            //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+
         return http.build()
     }
 

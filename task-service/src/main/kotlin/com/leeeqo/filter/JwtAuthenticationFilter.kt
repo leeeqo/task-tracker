@@ -1,31 +1,27 @@
 package com.leeeqo.filter
 
-import com.leeeqo.service.OtherTokenService
+import com.leeeqo.exception.InvalidTokenException
 import com.leeeqo.service.TokenService
+import com.leeeqo.service.JwtService
 import io.jsonwebtoken.JwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import mu.KotlinLogging
-import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
-import org.springframework.web.ErrorResponse
 import org.springframework.web.filter.OncePerRequestFilter
-import java.io.IOException
-import java.time.LocalDateTime
 
 private val kLogger = KotlinLogging.logger {}
 
 
 @Component
-class JwtAuthFilter(
+class JwtAuthenticationFilter(
+    private val jwtService: JwtService,
     private val tokenService: TokenService,
-    private val otherTokenService: OtherTokenService,
-    //private val messageSource: MessageSour
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -33,18 +29,14 @@ class JwtAuthFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        kLogger.info { "IN FILTER" }
 
-        val jwt = tokenService.extractJwt(request)
-
-        kLogger.info { "JWT = $jwt" }
+        val jwt = jwtService.extractJwt(request)
 
         if (!jwt.isNullOrEmpty() && SecurityContextHolder.getContext().authentication == null) {
             try {
-                val userDetails: UserDetails = otherTokenService.userDetailsFromJwt(jwt)
+                val userDetails: UserDetails = tokenService.userDetailsFromJwt(jwt)
 
-                kLogger.info { "UsetDetails SUCCESS" }
-                if (otherTokenService.isTokenValid(jwt)) {
+                if (tokenService.isTokenValid(jwt)) {
                     val authenticationToken: UsernamePasswordAuthenticationToken =
                         createAuthenticationToken(userDetails, request)
 
@@ -52,11 +44,12 @@ class JwtAuthFilter(
 
                     context.authentication = authenticationToken
                     SecurityContextHolder.setContext(context)
+                } else {
+                    throw InvalidTokenException("Invalid token.")
                 }
             } catch (e: JwtException) {
                 //handleInvalidJwtException(response, e.message)
                 // TODO
-
                 kLogger.info { "EXCEPTION THROWN" }
 
                 return
@@ -77,9 +70,9 @@ class JwtAuthFilter(
             details = WebAuthenticationDetailsSource().buildDetails(request)
         }
 
-    @Throws(IOException::class)
+    /*@Throws(IOException::class)
     private fun handleInvalidJwtException(response: HttpServletResponse, message: String) {
-        /*val errorResponse: ErrorResponse = ErrorResponse.builder()
+        val errorResponse: ErrorResponse = ErrorResponse.builder()
             .description(messageSource.getProperty("jwt.invalid"))
             .code(HttpStatus.FORBIDDEN.value())
             .message(message)
@@ -87,7 +80,7 @@ class JwtAuthFilter(
             .build()
         response.contentType = "application/json"
         response.status = HttpServletResponse.SC_FORBIDDEN
-        response.writer.write(objectMapper.writeValueAsString(errorResponse))*/
+        response.writer.write(objectMapper.writeValueAsString(errorResponse))
         // TODO
-    }
+    }*/
 }

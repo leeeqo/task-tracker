@@ -1,9 +1,7 @@
 package com.leeeqo.service
 
 import com.leeeqo.dto.AuthenticationRequest
-import com.leeeqo.dto.AuthenticationResponse
 import com.leeeqo.dto.TokenResponse
-import com.leeeqo.dto.UserDTO
 import com.leeeqo.entity.User
 import com.leeeqo.exception.EmailAlreadyExistsException
 import com.leeeqo.exception.UserBadCredentialsException
@@ -20,14 +18,13 @@ import org.springframework.stereotype.Service
 class UserService (
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val tokenService: TokenService,
-    private val authenticationService: AuthenticationService,
+    private val jwtService: JwtService,
     private val authenticationManager: AuthenticationManager,
-    private val userDetailsService: JwtUserDetailsService,
-    private val otherTokenService: OtherTokenService
+    private val userDetailsService: UserDetailsService,
+    private val tokenService: TokenService
 ) {
 
-    fun register(request: AuthenticationRequest): Boolean {
+    fun register(request: AuthenticationRequest): Long {
         userRepository.findByEmail(request.email)?.let {
             throw EmailAlreadyExistsException("User ${request.email} already exists.")
         }
@@ -37,9 +34,9 @@ class UserService (
             password = passwordEncoder.encode(request.password)
         )
 
-        userRepository.saveAndFlush(user)
+        val savedUser = userRepository.saveAndFlush(user)
 
-        return true
+        return savedUser.id
     }
 
     fun authenticate(request: AuthenticationRequest): TokenResponse {
@@ -58,20 +55,10 @@ class UserService (
 
         val user = userDetailsService.loadUserByUsername(request.email)
 
-        otherTokenService.deleteToken(user)
-        val jwt = tokenService.generateJwt(user)
-        otherTokenService.createToken(user, jwt)
+        tokenService.deleteToken(user)
+        val jwt = jwtService.generateJwt(user)
+        tokenService.createToken(user, jwt)
 
         return TokenResponse(jwt)
-
-        /*val accessToken = createAccessToken(user)
-        val refreshToken = createRefreshToken(user)
-
-        refreshTokenRepository.save(refreshToken, user)
-
-        return AuthenticationResponse(
-            accessToken = accessToken,
-            refreshToken = refreshToken
-        )*/
     }
 }

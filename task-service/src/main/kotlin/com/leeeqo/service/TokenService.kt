@@ -1,75 +1,46 @@
 package com.leeeqo.service
 
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
-import io.jsonwebtoken.security.Keys
-import jakarta.servlet.http.HttpServletRequest
-import org.springframework.beans.factory.annotation.Value
+import com.leeeqo.entity.Token
+import com.leeeqo.entity.User
+import com.leeeqo.exception.InvalidTokenException
+import com.leeeqo.repository.TokenRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
-import java.util.*
-import javax.crypto.SecretKey
-import javax.crypto.spec.SecretKeySpec
 
 @Service
-class TokenService (
-    @Value("\${token.signing.value}")
-    private val secret: String
+class TokenService(
+    private val jwtService: JwtService,
+    private val tokenRepository: TokenRepository,
+    private val userDetailsService: UserDetailsService,
 ) {
 
-    private val signingKey: SecretKey
-        get() {
-            val keyBytes: ByteArray = Base64.getDecoder().decode(secret)
-            //return SecretKeySpec(keyBytes, 0, keyBytes.size, "HmacSHA256")
-            return Keys.hmacShaKeyFor(keyBytes)
+    fun createToken(user: User, jwt: String) {
+        tokenRepository.save(
+            Token(
+                user = user,
+                jwt = jwt,
+                expired = false,
+                revoked = false
+            )
+        )
+    }
+
+    fun deleteToken(user: User) {
+        tokenRepository.findByUser(user)?.let {
+            tokenRepository.delete(it)
         }
-
-    fun generateToken(subject: String, expiration: Date, additionalClaims: Map<String, Any> = emptyMap()): String {
-        return Jwts.builder()
-            .setClaims(additionalClaims)
-            .setSubject(subject)
-            .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(expiration)
-            .signWith(signingKey, SignatureAlgorithm.HS256)
-            .compact()
     }
 
-    fun extractEmail(token: String): String =
-        extractAllClaims(token).subject
+    fun isTokenValid(jwt: String): Boolean {
+        val user = userDetailsFromJwt(jwt)
+        val token = tokenRepository.findByJwt(jwt) ?: return false
 
-    private fun extractAllClaims(token: String): Claims {
-        return Jwts.parserBuilder()
-            .setSigningKey(signingKey)
-            .build()
-            .parseClaimsJws(token)
-            .body
+        return !token.expired && !token.revoked && jwtService.isJwtValid(jwt, user)
     }
 
-    fun isJwtValid(jwt: String, userDetails: UserDetails): Boolean =
-        extractEmail(jwt) == userDetails.username && !isJwtExpired(jwt)
+    fun userDetailsFromJwt(jwt: String): UserDetails {
+        val email = jwtService.extractEmail(jwt)
 
-    fun isJwtExpired(jwt: String) =
-        extractAllClaims(jwt).expiration.before(Date())
-
-    fun generateJwt(userDetails: UserDetails): String {
-        return Jwts.builder()
-            .setClaims(hashMapOf<String, Any>())
-            .setSubject(userDetails.username)
-            .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-            .signWith(signingKey, SignatureAlgorithm.HS256)
-            .compact()
-    }
-
-    fun extractJwt(request: HttpServletRequest): String? {
-        val authHeader = request.getHeader("Authorization")
-
-        // TODO - prefix
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7)
-        }
-
-        return null
+        return userDetailsService.loadUserByUsername(email)
     }
 }

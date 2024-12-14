@@ -3,12 +3,11 @@ package com.leeeqo.service
 import com.leeeqo.entity.User
 import com.leeeqo.exception.EmailNotFoundException
 import com.leeeqo.repository.UserRepository
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 
 @Service
-class JwtUserDetailsService(
+class UserDetailsService(
     private val userRepository: UserRepository
 ) : UserDetailsService {
 
