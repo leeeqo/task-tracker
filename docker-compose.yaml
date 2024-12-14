@@ -1,7 +1,20 @@
 services:
+  task-service:
+    image: '${TASK_SERVICE_IMAGE}'
+    container_name: 'task-service'
+    environment:
+      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-tracker'
+      - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
   postgres:
-    image: postgres:latest
-    container_name: postgres-task-tracker
+    image: 'postgres:latest'
+    container_name: 'postgres-task-tracker'
     environment:
       - 'POSTGRES_DB=postgres-task-tracker'
       - 'POSTGRES_USER=${POSTGRES_USERNAME}'
@@ -10,7 +23,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ~/task-tracker:/var/lib/postgresql/data
+      - /task-tracker:/var/lib/postgresql/data
     restart: unless-stopped
 
   zookeeper:
