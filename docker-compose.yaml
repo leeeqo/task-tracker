@@ -1,6 +1,8 @@
 services:
   task-service:
-    image: '${TASK_SERVICE_IMAGE}'
+    build:
+      context: task-service
+      dockerfile: ../task-service/Dockerfile
     container_name: 'task-service'
     environment:
       - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-tracker'
