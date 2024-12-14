@@ -39,6 +39,9 @@ dependencies {
     // Logger
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 
+    // Mapper
+    implementation("org.mapstruct:mapstruct:1.4.2.Final")
+
     implementation("org.postgresql:postgresql")
     runtimeOnly("org.springframework.boot:spring-boot-starter-tomcat")
     runtimeOnly("org.postgresql:postgresql")
