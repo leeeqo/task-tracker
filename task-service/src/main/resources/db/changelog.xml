@@ -22,4 +22,24 @@
             <column name="email"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="init-token" author="oli">
+        <createTable tableName="tokens">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_tokens_users" references="users(id)" />
+            </column>
+            <column name="jwt" type="varchar">
+                <constraints nullable="false" />
+            </column>
+            <column name="revoked" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <column name="expired" type="boolean">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

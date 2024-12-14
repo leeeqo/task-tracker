@@ -36,6 +36,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
+    // Logger
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
+
     implementation("org.postgresql:postgresql")
     runtimeOnly("org.springframework.boot:spring-boot-starter-tomcat")
     runtimeOnly("org.postgresql:postgresql")

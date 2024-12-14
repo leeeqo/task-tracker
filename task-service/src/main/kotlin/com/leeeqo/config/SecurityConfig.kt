@@ -1,5 +1,6 @@
 package com.leeeqo.config
 
+import com.leeeqo.filter.JwtAuthFilter
 import com.leeeqo.filter.JwtAuthorizationFilter
 import com.leeeqo.repository.UserRepository
 import com.leeeqo.service.JwtUserDetailsService
@@ -39,27 +40,38 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        jwtAuthenticationFilter: JwtAuthorizationFilter,
+        //jwtAuthenticationFilter: JwtAuthorizationFilter,
+        jwtAuthFilter: JwtAuthFilter,
         authenticationProvider: AuthenticationProvider
     ): DefaultSecurityFilterChain {
         http
             .csrf { it.disable() }
-            .authorizeHttpRequests {
-                it
-                    .requestMatchers(
+            .authorizeHttpRequests { authorize ->
+                    /*.requestMatchers(
                         "/api/v1/auth",
                         "/api/v1/auth/register",
-                        "/error",
-                        "/test")
+                        "/error")
+                        //"/test")
                     .permitAll()
                     .anyRequest()
-                    .fullyAuthenticated()
+                    .fullyAuthenticated()*/
+                    authorize.requestMatchers(
+                        "/api/v1/auth",
+                        "/api/v1/auth/register",
+                        "/api/v1/auth/authenticate")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated()
+                    /*authorize.requestMatchers(
+                        "/api/v1/validate")
+                        .authenticated()*/
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+            //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
 

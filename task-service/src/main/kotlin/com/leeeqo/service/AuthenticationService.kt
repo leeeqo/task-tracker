@@ -86,7 +86,7 @@ class AuthenticationService(
         }
     }
 
-    private fun createAccessToken(user: UserDetails): String {
+    fun createAccessToken(user: UserDetails): String {
         return tokenService.generateToken(
             subject = user.username,
             expiration = Date(System.currentTimeMillis() + accessTokenExpiration)
