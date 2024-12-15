@@ -1,11 +1,9 @@
 server:
-  port: 8080
-  servlet:
-    context-path: /task-tracker
+  port: 8880
 
 spring:
   application:
-    name: task-service
+    name: weather
   datasource:
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USERNAME}
@@ -18,19 +16,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  liquibase:
-    change-log: db/changelog.xml
 
 logging:
   level:
     org.springframework.web: "debug"
     org.hibernate:
       SQL: "debug"
-
-token:
-  signing:
-    value: "TmFydmEgb24gbGlubiBFZXN0aSBraXJkZW9zYXMgSWRhLVZpcnUgbWFha29ubmFzIE5hcnZhIGrDtWUgYWxhbWpvb2tzdWwgRWVzdGktVmVuZW1hYSBwaWlyaSDDpMOkcmVzLg=="
-
-jwt:
-  accessTokenExpiration: 10000
-  refreshTokenExpiration: 10000
