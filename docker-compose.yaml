@@ -28,7 +28,10 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+
+      # How many replicated partitions do we have
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     ports:
@@ -62,6 +65,7 @@ services:
       - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-tracker'
       - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
       - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'KAFKA_ADDRESS=kafka:29092'
     ports:
       - '8880:8880'
     restart: unless-stopped

@@ -1,0 +1,29 @@
+server:
+  port: 587
+  servlet:
+    context-path: /notification-service
+
+spring:
+  application:
+    name: notification-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    partitions: 10
+    topics:
+      sending-tasks: EMAIL_SENDING_TASKS
+  mail:
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: 587
+    host: smtp.gmail.com
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.debug: true
+      mail.transport.protocol: smtp
+
+logging:
+  level:
+    org.springframework.web: "debug"
+    org.hibernate:
+      SQL: "debug"

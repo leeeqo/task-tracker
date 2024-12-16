@@ -1,5 +1,7 @@
 server:
   port: 8880
+  servlet:
+    context-path: /scheduler-service
 
 spring:
   application:
@@ -17,6 +19,7 @@ spring:
       hibernate:
         format_sql: true
   kafka:
+    bootstrap-servers: ${KAFKA_ADDRESS}
     topics:
       sending-tasks: EMAIL_SENDING_TASKS
 
@@ -25,7 +28,3 @@ logging:
     org.springframework.web: "debug"
     org.hibernate:
       SQL: "debug"
-
-kafka:
-  topic:
-    email: EMAIL_SENDING_TASKS

@@ -5,8 +5,11 @@ import com.leeeqo.dto.TaskDTO
 import com.leeeqo.entity.Task
 import com.leeeqo.entity.User
 import com.leeeqo.repository.TaskRepository
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+
+private val kLogger = KotlinLogging.logger {}
 
 @Service
 class TaskService(
@@ -22,7 +25,9 @@ class TaskService(
             user.email,
             getFinishedTasks(user),
             getUnfinishedTasks(user)
-        )
+        ).also {
+            kLogger.info { "SCHEDULER: daily summary for ${user.email} prepared" }
+        }
 
     private fun getFinishedTasks(user: User): List<TaskDTO> =
         getTasksByUserAndPredicateWithLimit(user) {
