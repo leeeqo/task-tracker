@@ -19,8 +19,18 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-devtools")
+
+    // Kafka
+    implementation("org.springframework.kafka:spring-kafka")
+
+    // Kotlin necessities
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    implementation("org.postgresql:postgresql")
+    runtimeOnly("org.springframework.boot:spring-boot-starter-tomcat")
+    runtimeOnly("org.postgresql:postgresql")
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")

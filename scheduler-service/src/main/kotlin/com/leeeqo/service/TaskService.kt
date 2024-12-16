@@ -5,8 +5,10 @@ import com.leeeqo.dto.TaskDTO
 import com.leeeqo.entity.Task
 import com.leeeqo.entity.User
 import com.leeeqo.repository.TaskRepository
+import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
+@Service
 class TaskService(
     private val taskRepository: TaskRepository
 ) {

@@ -1,6 +1,6 @@
 package com.leeeqo.scheduler
 
-import com.leeeqo.producer.DailySummaryProducer
+import com.leeeqo.producer.KafkaProducer
 import com.leeeqo.service.TaskService
 import com.leeeqo.service.UserService
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 class DailyScheduler(
     private val userService: UserService,
     private val taskService: TaskService,
-    private val producer: DailySummaryProducer
+    private val producer: KafkaProducer
 ) {
 
     @Scheduled(cron = "0 0 0 * * *")

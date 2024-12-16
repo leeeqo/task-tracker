@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: weather
+    name: scheduler-service
   datasource:
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USERNAME}
@@ -16,9 +16,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  kafka:
+    topics:
+      sending-tasks: EMAIL_SENDING_TASKS
 
 logging:
   level:
     org.springframework.web: "debug"
     org.hibernate:
       SQL: "debug"
+
+kafka:
+  topic:
+    email: EMAIL_SENDING_TASKS

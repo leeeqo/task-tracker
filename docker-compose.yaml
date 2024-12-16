@@ -1,19 +1,4 @@
 services:
-  task-service:
-    build:
-      context: task-service
-      dockerfile: ../task-service/Dockerfile
-    container_name: 'task-service'
-    environment:
-      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-tracker'
-      - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
-      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
-    ports:
-      - '8080:8080'
-    restart: unless-stopped
-    depends_on:
-      - postgres
-
   postgres:
     image: 'postgres:latest'
     container_name: 'postgres-task-tracker'
@@ -29,28 +14,57 @@ services:
     restart: unless-stopped
 
   zookeeper:
-    image: bitnami/zookeeper:3.8.0
-    container_name: task-tracker-zookeeper
-    restart: on-failure
-    ports:
-      - "2181:2181"
+    image: confluentinc/cp-zookeeper:7.3.2
+    container_name: zookeeper
     environment:
-      ZOO_PORT: 2181
-      ALLOW_ANONYMOUS_LOGIN: "yes"
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: bitnami/kafka:3.8.0
-    container_name: task-tracker-kafka
-    restart: on-failure
-    depends_on:
-      - zookeeper
+    image: confluentinc/cp-kafka:7.3.2
+    container_name: kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     ports:
       - "9092:9092"
+    depends_on:
+      - zookeeper
+
+  task-service:
+    build:
+      context: task-service
+      dockerfile: ../task-service/Dockerfile
+    container_name: 'task-service'
     environment:
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_ZOOKEEPER_CONNECT: "my-zookeeper:2181"
-      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9092"
-      KAFKA_TOPIC: "EMAIL_SENDING_TASKS"
-      ALLOW_PLAINTEXT_LISTENER: "yes"
+      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-tracker'
+      - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  scheduler-service:
+    build:
+      context: scheduler-service
+      dockerfile: ../scheduler-service/Dockerfile
+    container_name: 'scheduler-service'
+    environment:
+      # Temporary Solution
+      # TODO - separate user-service, users db replication, REST integration with task-service
+      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-tracker'
+      - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+    ports:
+      - '8880:8880'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - kafka
