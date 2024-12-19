@@ -1,0 +1,28 @@
+server:
+  port: 8888
+  servlet:
+    context-path: /task-tracker
+
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    change-log: db/changelog.xml
+
+logging:
+  level:
+    org.springframework.web: "debug"
+    org.hibernate:
+      SQL: "debug"

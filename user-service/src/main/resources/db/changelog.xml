@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="init-tables" author="oli">
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="email" type="varchar">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="phone" type="varchar" />
+            <column name="name" type="varchar">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="task_ids">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="created_by" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_task_ids_users" references="users(id)" />
+            </column>
+            <column name="task_id" type="bigint" />
+        </createTable>
+
+        <createTable tableName="task_ids_users">
+            <column name="task_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="task_ids_users"
+                       columnNames="task_id, user_id"
+                       constraintName="primary_key_constraint" />
+
+        <addForeignKeyConstraint baseTableName="task_ids_users"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_task_ids_users_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id" />
+
+        <addForeignKeyConstraint baseTableName="task_ids_users"
+                                 baseColumnNames="task_id"
+                                 constraintName="fk_task_ids_users_task_ids"
+                                 referencedTableName="task_ids"
+                                 referencedColumnNames="id" />
+    </changeSet>
+</databaseChangeLog>
