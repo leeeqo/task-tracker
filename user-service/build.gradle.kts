@@ -33,6 +33,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
+    // Kafka
+    implementation("org.springframework.kafka:spring-kafka")
+
     // Logger
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 

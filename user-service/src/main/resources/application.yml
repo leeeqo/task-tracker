@@ -18,6 +18,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  kafka:
+    bootstrap-servers: ${KAFKA_ADDRESS}
+    partitions: 10
+    topics:
+      task-update: TASK_UPDATE
+      user-update: USER_UPDATE
   liquibase:
     change-log: db/changelog.xml
 
