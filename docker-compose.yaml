@@ -1,16 +1,17 @@
 services:
-  postgres:
+  postgres-user-service:
     image: 'postgres:latest'
     container_name: 'postgres-task-tracker'
     environment:
-      - 'POSTGRES_DB=postgres-task-tracker'
+      - 'POSTGRES_MULTIPLE_DATABASES=postgres-task-service,
+                                     postgres-user-service'
       - 'POSTGRES_USER=${POSTGRES_USERNAME}'
       - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
       - 'POSTGRES_HOST_AUTH_METHOD=trust'
     ports:
       - '5432:5432'
     volumes:
-      - /task-tracker:/var/lib/postgresql/data
+      - /task-tracker/multiple-databases:/var/lib/postgresql/data
     restart: unless-stopped
 
   zookeeper:
@@ -45,7 +46,7 @@ services:
       dockerfile: ../task-service/Dockerfile
     container_name: 'task-service'
     environment:
-      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-tracker'
+      - 'POSTGRES_URL=jdbc:postgresql://postgres-task-service:5432/postgres-task-tracker'
       - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
       - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
     ports:
