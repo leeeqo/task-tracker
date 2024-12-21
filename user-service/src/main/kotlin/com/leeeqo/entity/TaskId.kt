@@ -1,18 +1,19 @@
 package com.leeeqo.entity
 
-import com.leeeqo.kafka.KafkaProducer
+import com.leeeqo.kafka.TaskIdProducer
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "task_ids")
-@EntityListeners(KafkaProducer::class)
+@EntityListeners(TaskIdProducer::class)
 data class TaskId(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
     @ManyToOne
-    val createdBy: User = User(),
+    @JoinColumn(name = "user_id")
+    val assignee: User = User(),
 
     /*@ManyToMany
     @JoinTable(

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface TaskIdRepository : JpaRepository<TaskId, Long> {
 
-    fun existsByTaskIdAndCreatedById(taskId: Long, createdById: Long): Boolean
+    fun existsByTaskIdAndAssigneeId(taskId: Long, assigneeId: Long): Boolean
 }

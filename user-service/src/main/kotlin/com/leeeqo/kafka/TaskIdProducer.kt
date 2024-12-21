@@ -1,7 +1,7 @@
 package com.leeeqo.kafka
 
-import com.leeeqo.dto.Operation
-import com.leeeqo.dto.TaskUserMessage
+import com.leeeqo.dto.kafka.Operation
+import com.leeeqo.dto.kafka.TaskUserMessage
 import com.leeeqo.entity.TaskId
 import jakarta.persistence.PostPersist
 import jakarta.persistence.PostRemove
@@ -10,7 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class KafkaProducer(
+class TaskIdProducer(
     @Value("\${spring.kafka.topics.task-update}")
     private var taskUpdateTopic: String,
 
@@ -28,7 +28,7 @@ class KafkaProducer(
             taskUpdateTopic,
             TaskUserMessage(
                 taskId = taskId.taskId,
-                userId = taskId.createdBy.id,
+                userId = taskId.assignee.id,
                 type = type
             )
         )

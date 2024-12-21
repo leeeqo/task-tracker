@@ -1,4 +1,4 @@
-package com.leeeqo.dto
+package com.leeeqo.dto.kafka
 
 data class TaskUserMessage(
     val userId: Long,

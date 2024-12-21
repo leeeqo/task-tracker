@@ -3,12 +3,10 @@ package com.leeeqo.mapper
 import com.leeeqo.dto.UserRequest
 import com.leeeqo.dto.UserResponse
 import com.leeeqo.entity.User
-import org.mapstruct.Mapper
 import org.springframework.stereotype.Component
 
-//@Mapper(componentModel = "spring")
 @Component
-class UserMapper { //: EntityMapper<User, UserRequest, UserResponse>
+object UserMapper {
 
     fun mapToResponse(user: User) =
         UserResponse(

@@ -18,27 +18,27 @@ data class User (
 
     @ToStringExclude
     @OneToMany(
-        mappedBy = "createdBy",
+        mappedBy = "assignee",
         fetch = FetchType.LAZY,
         cascade = [CascadeType.ALL],
         orphanRemoval = true
     )
-    val createdTaskIds: MutableList<TaskId> = mutableListOf(),
+    val assignedTasks: MutableList<TaskId> = mutableListOf(),
 
     /*@ToStringExclude
     @ManyToMany(mappedBy = "assignedTo")
     val assignedToTaskIds: MutableList<TaskId> = mutableListOf()*/
 ) {
 
-    fun addCreatedTaskId(taskId: Long) = createdTaskIds.add(
+    fun addAssignedTask(taskId: Long) = assignedTasks.add(
         TaskId(
             taskId = taskId,
-            createdBy = this
+            assignee = this
         )
     )
 
-    fun removeCreatedTaskId(taskId: Long): User {
-        createdTaskIds.removeIf { it.taskId == taskId }
+    fun removeAssignedTask(taskId: Long): User {
+        assignedTasks.removeIf { it.taskId == taskId }
 
         return this
     }
