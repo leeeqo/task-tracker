@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.server.ServerWebExchange
@@ -28,7 +29,8 @@ class AuthenticationGatewayFilterFactory(
             if (!responseEntity.statusCode.is2xxSuccessful)
                 throw RuntimeException("Request failed, status code: " + responseEntity.statusCode)
 
-            chain.filter(exchange.mutate().build())
+            val request = addClientHeader(responseEntity.body!!, exchange)
+            chain.filter(exchange.mutate().request(request).build())
         }
 
     private fun sendValidationRequest(exchange: ServerWebExchange): ResponseEntity<Long> {
@@ -39,6 +41,12 @@ class AuthenticationGatewayFilterFactory(
 
         return restTemplate.exchange(requestEntity, Long::class.java)
     }
+
+    private fun addClientHeader(clientId: Long, exchange: ServerWebExchange): ServerHttpRequest =
+        exchange.request
+            .mutate()
+            .header("clientId", clientId.toString())
+            .build()
 
     class Config
 }
