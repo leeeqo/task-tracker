@@ -56,6 +56,23 @@ services:
     depends_on:
       - postgres
 
+  user-service:
+    build:
+      context: user-service
+      dockerfile: ../user-service/Dockerfile
+    container_name: 'user-service'
+    environment:
+      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-user-service'
+      - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'KAFKA_ADDRESS=kafka:29092'
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - kafka
+
   scheduler-service:
     build:
       context: scheduler-service
