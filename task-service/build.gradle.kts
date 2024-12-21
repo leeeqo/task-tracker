@@ -19,17 +19,16 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-devtools")
+
+    // Client
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:3.1.2")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:3.1.2")
 
     // https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 
     implementation("javax.xml.bind:jaxb-api:2.3.1")
-
-    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-    implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
     implementation("org.liquibase:liquibase-core")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -37,6 +36,9 @@ dependencies {
     // Kotlin necessities
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    // Kafka
+    implementation("org.springframework.kafka:spring-kafka")
 
     // Logger
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")

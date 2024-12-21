@@ -5,73 +5,39 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="init-tables" author="oli">
-        <createTable tableName="users">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" />
-            </column>
-            <column name="email" type="varchar">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="password" type="varchar">
-                <constraints nullable="false" />
-            </column>
-        </createTable>
-
-        <createIndex indexName="users_idx_email" tableName="users">
-            <column name="email"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet id="init-token" author="oli">
-        <createTable tableName="tokens">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" />
-            </column>
-            <column name="user_id" type="int">
-                <constraints nullable="false" foreignKeyName="fk_tokens_users" references="users(id)" />
-            </column>
-            <column name="jwt" type="varchar">
-                <constraints nullable="false" />
-            </column>
-            <column name="revoked" type="boolean">
-                <constraints nullable="false" />
-            </column>
-            <column name="expired" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </createTable>
-    </changeSet>
-
     <changeSet id="init-tasks" author="oli">
         <createTable tableName="tasks">
-            <column name="id" type="int" autoIncrement="true">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" />
             </column>
             <column name="title" type="varchar">
                 <constraints nullable="false" />
             </column>
             <column name="description" type="varchar" />
-            <column name="creation_date" type="timestamp">
+            <column name="creation_date" type="timestamp(6) with time zone">
                 <constraints nullable="false" />
             </column>
-            <column name="deadline" type="timestamp"/>
-            <column name="completion_date" type="timestamp" />
+            <column name="deadline" type="timestamp(6) with time zone"/>
+            <column name="completion_date" type="timestamp(6) with time zone" />
+            <column name="clientId" type="bigint">
+                <constraints nullable="false" />
+            </column>
         </createTable>
-    </changeSet>
-
-    <changeSet id="change-data-type" author="oli">
-        <modifyDataType  columnName="creation_date"
-                         newDataType="timestamp(6) with time zone"
-                         schemaName="public"
-                         tableName="tasks"/>
-        <modifyDataType  columnName="deadline"
-                         newDataType="timestamp(6) with time zone"
-                         schemaName="public"
-                         tableName="tasks"/>
-        <modifyDataType  columnName="completion_date"
-                         newDataType="timestamp(6) with time zone"
-                         schemaName="public"
-                         tableName="tasks"/>
+        
+        <createTable tableName="user_ids">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="task_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_user_ids_tasks" references="tasks(id)" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        
+        <addUniqueConstraint tableName="user_ids"
+                             columnNames="task_id, user_id"
+                             constraintName="unique_task_id_user_id" />
     </changeSet>
 </databaseChangeLog>

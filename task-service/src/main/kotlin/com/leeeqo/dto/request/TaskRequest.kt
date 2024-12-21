@@ -1,4 +1,4 @@
-package com.leeeqo.dto
+package com.leeeqo.dto.request
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime

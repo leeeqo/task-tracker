@@ -1,12 +1,9 @@
 package com.leeeqo.controller
 
-import com.leeeqo.dto.TaskRequest
+import com.leeeqo.dto.request.TaskRequest
 import com.leeeqo.entity.Task
-import com.leeeqo.entity.User
 import com.leeeqo.service.TaskService
-import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,24 +13,24 @@ class TaskController(
 ) {
 
     @GetMapping
-    fun getTasks(@AuthenticationPrincipal user: User): ResponseEntity<List<Task>> =
-        ResponseEntity.ok(taskService.getTasks(user))
+    fun getCreatedTasks(@RequestHeader clientId: Long): ResponseEntity<List<Task>> =
+        ResponseEntity.ok(taskService.getTasksByClient(clientId))
 
     @PostMapping
-    fun createTask(@AuthenticationPrincipal user: User,
+    fun createTask(@RequestHeader clientId: Long,
                    @RequestBody request: TaskRequest
     ): ResponseEntity<Task> =
-        ResponseEntity.ok(taskService.createTask(user, request))
+        ResponseEntity.ok(taskService.createTaskByClient(clientId, request))
 
     @PostMapping("/delete")
-    fun deleteTask(@AuthenticationPrincipal user: User,
-                   @RequestParam("taskId") taskId: Long
+    fun deleteCreatedTask(@RequestHeader clientId: Long,
+                          @RequestParam("taskId") taskId: Long
     ): ResponseEntity<Unit> =
-        ResponseEntity.ok(taskService.deleteTask(taskId))
+        ResponseEntity.ok(taskService.deleteTaskByClient(clientId, taskId))
 
     @PostMapping("/finish")
-    fun finishTask(@AuthenticationPrincipal user: User,
-                   @RequestParam("taskId") taskId: Long
+    fun finishCreatedTask(@RequestHeader clientId: Long,
+                          @RequestParam("taskId") taskId: Long
     ): ResponseEntity<Boolean> =
-        ResponseEntity.ok(taskService.finishTask(taskId))
+        ResponseEntity.ok(taskService.finishTaskByClient(clientId, taskId))
 }

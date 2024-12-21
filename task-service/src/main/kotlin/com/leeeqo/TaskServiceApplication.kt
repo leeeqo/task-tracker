@@ -1,12 +1,17 @@
 package com.leeeqo
 
 import org.springframework.boot.Banner
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.cloud.openfeign.EnableFeignClients
+import org.springframework.cloud.openfeign.FeignAutoConfiguration
 
-@EnableWebSecurity
+
+@EnableFeignClients
 @SpringBootApplication
+@ImportAutoConfiguration(classes = [FeignAutoConfiguration::class])
 class TaskServiceApplication
 
 fun main(args: Array<String>) {
