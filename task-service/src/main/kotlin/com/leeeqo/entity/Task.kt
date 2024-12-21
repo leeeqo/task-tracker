@@ -43,4 +43,12 @@ data class Task (
             )
         )
     }
+
+    fun removeAssignee(userId: Long): Task {
+        assignees.removeIf {
+            it.userId == userId
+        }
+
+        return this
+    }
 }
