@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository
 interface UserIdRepository : JpaRepository<UserId, Long> {
 
     fun existsByAssignedTaskIdAndUserId(assignedTaskId: Long, userId: Long): Boolean
+
+    fun findAllByUserId(userId: Long): List<UserId>
 }

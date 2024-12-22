@@ -10,6 +10,7 @@ import feign.FeignException
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.util.*
+import java.util.stream.Collectors
 
 private val kLogger = KotlinLogging.logger {}
 
@@ -19,6 +20,12 @@ class TaskAssigneeService(
     private val userIdRepository: UserIdRepository,
     private val userClient: UserClient
 ) {
+
+    fun getAllByAssigneeId(assigneeId: Long): List<TaskResponse> =
+        userIdRepository.findAllByUserId(assigneeId).stream()
+            .map { it.assignedTask }
+            .map { TaskMapper.mapToResponse(it) }
+            .toList()
 
     fun addAssignees(clientId: Long, taskId: Long, request: AssigneesRequest): TaskResponse {
         val task = taskRepository.findById(taskId)

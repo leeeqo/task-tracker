@@ -1,13 +1,15 @@
 package com.leeeqo.service
 
-import com.leeeqo.entity.User
-import com.leeeqo.repository.UserRepository
+import com.leeeqo.client.UserClient
+import com.leeeqo.dto.UserResponse
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    private val userRepository: UserRepository
+    //private val userRepository: UserRepository
+    private val userClient: UserClient
 ) {
 
-    fun getAllUsers(): List<User> = userRepository.findAll()
+    fun getAllUsers(): List<UserResponse> =
+        userClient.receiveAll().body ?: listOf()
 }

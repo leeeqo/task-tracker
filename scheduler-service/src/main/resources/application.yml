@@ -6,18 +6,6 @@ server:
 spring:
   application:
     name: scheduler-service
-  datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    generate-ddl: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        format_sql: true
   kafka:
     bootstrap-servers: ${KAFKA_ADDRESS}
     topics:
