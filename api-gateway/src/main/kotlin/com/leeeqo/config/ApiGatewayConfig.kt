@@ -21,7 +21,8 @@ class ApiGatewayConfig {
         val configuration = CorsConfiguration()
         configuration.applyPermitDefaultValues()
         configuration.allowedOrigins =
-            listOf("http://localhost:8080", "http://localhost:8000", "http://localhost:3000")
+            listOf("http://localhost:8080", "http://localhost:8081",
+                   "http://localhost:8082", "http://localhost:8083")
         configuration.addAllowedMethod(HttpMethod.DELETE)
 
         val source = UrlBasedCorsConfigurationSource()

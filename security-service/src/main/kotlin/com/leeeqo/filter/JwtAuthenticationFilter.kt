@@ -70,6 +70,7 @@ class JwtAuthenticationFilter(
             details = WebAuthenticationDetailsSource().buildDetails(request)
         }
 
+    // TODO
     /*@Throws(IOException::class)
     private fun handleInvalidJwtException(response: HttpServletResponse, message: String) {
         val errorResponse: ErrorResponse = ErrorResponse.builder()
@@ -81,6 +82,5 @@ class JwtAuthenticationFilter(
         response.contentType = "application/json"
         response.status = HttpServletResponse.SC_FORBIDDEN
         response.writer.write(objectMapper.writeValueAsString(errorResponse))
-        // TODO
     }*/
 }

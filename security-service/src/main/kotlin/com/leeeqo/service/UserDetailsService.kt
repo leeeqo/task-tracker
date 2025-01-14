@@ -5,6 +5,7 @@ import com.leeeqo.exception.EmailNotFoundException
 import com.leeeqo.repository.ClientRepository
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 @Service
 class UserDetailsService(

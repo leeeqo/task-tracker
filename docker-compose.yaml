@@ -41,20 +41,46 @@ services:
     depends_on:
       - zookeeper
 
+  api-gateway:
+    build:
+      context: api-gateway
+      dockerfile: ../api-gateway/Dockerfile
+    container_name: 'api-gateway'
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  security-service:
+    build:
+      context: security-service
+      dockerfile: ../security-service/Dockerfile
+    container_name: 'security-service'
+    environment:
+      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-security-service'
+      - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+    ports:
+      - '8081:8081'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
   task-service:
     build:
       context: task-service
       dockerfile: ../task-service/Dockerfile
     container_name: 'task-service'
     environment:
-      - 'POSTGRES_URL=jdbc:postgresql://postgres-task-service:5432/postgres-task-tracker'
+      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-service'
       - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
       - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'KAFKA_ADDRESS=kafka:29092'
     ports:
-      - '8080:8080'
+      - '8082:8082'
     restart: unless-stopped
     depends_on:
       - postgres
+      - kafka
 
   user-service:
     build:
@@ -67,7 +93,7 @@ services:
       - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
       - 'KAFKA_ADDRESS=kafka:29092'
     ports:
-      - '8080:8080'
+      - '8083:8083'
     restart: unless-stopped
     depends_on:
       - postgres
@@ -79,17 +105,11 @@ services:
       dockerfile: ../scheduler-service/Dockerfile
     container_name: 'scheduler-service'
     environment:
-      # Temporary Solution
-      # TODO - separate user-service, users db replication, REST integration with task-service
-      - 'POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-task-tracker'
-      - 'POSTGRES_USERNAME=${POSTGRES_USERNAME}'
-      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
       - 'KAFKA_ADDRESS=kafka:29092'
     ports:
       - '8880:8880'
     restart: unless-stopped
     depends_on:
-      - postgres
       - kafka
 
   notification-service:
