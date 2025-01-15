@@ -1,6 +1,6 @@
 # Task Tracker Project (IN PROGRESS)
 
-![scheme](https://github.com/user-attachments/assets/05474a7e-6039-4cb1-8e9e-07947ffec8ee)
+![task-tracker-scheme-v2](https://github.com/user-attachments/assets/ba5ffd26-542b-4268-b902-796ec742ab8b)
 
 Backend for tasks tracking.
 
